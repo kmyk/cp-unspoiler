@@ -1,0 +1,19 @@
+{
+  "name": "cp-unspoiler",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/kmyk/cp-unspoiler",
+  "author": "Kimiyuki Onaka <kimiyuki95@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^2.3.2",
+    "ts-loader": "^9.2.3",
+    "typescript": "^4.3.5",
+    "webpack": "^5.45.1",
+    "webpack-cli": "^4.7.2"
+  },
+  "dependencies": {
+    "js-base64": "^3.6.1",
+    "query-string": "^7.0.1"
+  }
+}
