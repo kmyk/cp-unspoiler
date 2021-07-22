@@ -1,15 +1,21 @@
 import queryString = require("query-string");
 import { Base64 } from "js-base64";
 
-function addSpoiler(info: HTMLUListElement, key: string, value: string, url?: string): void {
+function addSpoiler(info: HTMLUListElement, key: string, value: string, options: { url?: string; icon: string }): void {
   const li = document.createElement("li");
+  li.classList.add("list-group-item");
   const details = document.createElement("details");
   const summary = document.createElement("summary");
-  summary.textContent = key;
+  const i = document.createElement("i");
+  i.classList.add("bi");
+  i.classList.add("bi-" + options.icon);
+  summary.appendChild(i);
+  summary.appendChild(document.createTextNode(" "));
+  summary.appendChild(document.createTextNode(key));
   details.appendChild(summary);
-  if (url) {
+  if (options.url) {
     const a = document.createElement("a");
-    a.href = url;
+    a.href = options.url;
     a.textContent = value;
     details.appendChild(a);
   } else {
@@ -24,7 +30,7 @@ function loadAtCoderProblemsAPI(url: string, info: HTMLUListElement): { [key: st
   req.open("GET", url, false);
   req.send();
   if (req.status != 200) {
-    addSpoiler(info, "error: failed to call API of AtCoder Problems", req.statusText);
+    addSpoiler(info, "error: failed to call API of AtCoder Problems", req.statusText, { icon: "exclamation-triangle" });
     return [];
   }
   return JSON.parse(req.responseText);
@@ -33,7 +39,7 @@ function loadAtCoderProblemsAPI(url: string, info: HTMLUListElement): { [key: st
 function lookupAtCoderProblem(url: URL, info: HTMLUListElement): { [key: string]: string } {
   const match = /\/+contests\/+(\w+)\/+tasks\/+(\w+)/.exec(url.pathname);
   if (!match) {
-    addSpoiler(info, "error: failed to parse URL", "");
+    addSpoiler(info, "error: failed to parse URL", "", { icon: "exclamation-triangle" });
     return {};
   }
   const problemId = match[2];
@@ -43,7 +49,7 @@ function lookupAtCoderProblem(url: URL, info: HTMLUListElement): { [key: string]
       return problem;
     }
   }
-  addSpoiler(info, "error: problem info is not found in AtCoder Problems", problemId);
+  addSpoiler(info, "error: problem info is not found in AtCoder Problems", problemId, { icon: "exclamation-triangle" });
   return {};
 }
 
@@ -54,7 +60,7 @@ function lookupAtCoderContest(contestId: string, info: HTMLUListElement): { [key
       return contest;
     }
   }
-  addSpoiler(info, "error: contest info is not found in AtCoder Problems", contestId);
+  addSpoiler(info, "error: contest info is not found in AtCoder Problems", contestId, { icon: "exclamation-triangle" });
   return {};
 }
 
@@ -75,23 +81,23 @@ function updateInfoAtCoder(info: HTMLUListElement, url: URL): void {
   const contest = lookupAtCoderContest(problem["contest_id"], info);
   const category = getAtCoderProblemCategory(problem["id"]);
   const contestUrl = "https://atcoder.jp/contests/" + contest["id"];
-  addSpoiler(info, "Online Judge", "AtCoder");
-  addSpoiler(info, "Category", category);
-  addSpoiler(info, "Contest", contest["title"], contestUrl);
-  addSpoiler(info, "Point", problem["point"]);
-  addSpoiler(info, "Solver Count", problem["solver_count"]);
-  addSpoiler(info, "Problem Title", problem["title"], url.toString());
-  addSpoiler(info, "URL", url.toString(), url.toString());
+  addSpoiler(info, "Online Judge", "AtCoder", { url: "https://atcoder.jp/", icon: "link-45deg" });
+  addSpoiler(info, "Category", category, { icon: "bar-chart-line" });
+  addSpoiler(info, "Contest", contest["title"], { url: contestUrl, icon: "link-45deg" });
+  addSpoiler(info, "Point", problem["point"], { icon: "bar-chart-line" });
+  addSpoiler(info, "Solver Count", problem["solver_count"], { icon: "bar-chart-line" });
+  addSpoiler(info, "Problem Title", problem["title"], { url: url.toString(), icon: "link-45deg" });
+  addSpoiler(info, "URL", url.toString(), { url: url.toString(), icon: "link-45deg" });
 }
 
 function updateInfoCodeforces(info: HTMLUListElement, url: URL): void {
-  addSpoiler(info, "Online Judge", "Codeforces");
-  addSpoiler(info, "URL", url.toString(), url.toString());
+  addSpoiler(info, "Online Judge", "Codeforces", { url: "https://codeforces.com/", icon: "link-45deg" });
+  addSpoiler(info, "URL", url.toString(), { url: url.toString(), icon: "link-45deg" });
 }
 
 function updateInfoError(info: HTMLUListElement, url: URL): void {
-  addSpoiler(info, "error: invalid url", url.toString(), url.toString());
-  addSpoiler(info, "Supported Online Judges", "AtCoder, Codeforces");
+  addSpoiler(info, "error: invalid url", url.toString(), { url: url.toString(), icon: "link-45deg" });
+  addSpoiler(info, "Supported Online Judges", "AtCoder, Codeforces", { icon: "exclamation-triangle" });
 }
 
 function updateInfo(urlStr: string): void {
