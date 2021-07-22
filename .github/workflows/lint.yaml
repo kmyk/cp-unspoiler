@@ -17,4 +17,4 @@ jobs:
         run: yarn install
 
       - name: Run Prettier
-        run: yarn prettier --check src
+        run: yarn prettier --check --print-width=999 src

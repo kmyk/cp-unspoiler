@@ -1,12 +1,7 @@
 import queryString = require("query-string");
 import { Base64 } from "js-base64";
 
-function addSpoiler(
-  info: HTMLUListElement,
-  key: string,
-  value: string,
-  url?: string
-): void {
+function addSpoiler(info: HTMLUListElement, key: string, value: string, url?: string): void {
   const li = document.createElement("li");
   const details = document.createElement("details");
   const summary = document.createElement("summary");
@@ -24,69 +19,42 @@ function addSpoiler(
   info.appendChild(li);
 }
 
-function loadAtCoderProblemsAPI(
-  url: string,
-  info: HTMLUListElement
-): { [key: string]: string }[] {
+function loadAtCoderProblemsAPI(url: string, info: HTMLUListElement): { [key: string]: string }[] {
   const req = new XMLHttpRequest();
   req.open("GET", url, false);
   req.send();
   if (req.status != 200) {
-    addSpoiler(
-      info,
-      "error: failed to call API of AtCoder Problems",
-      req.statusText
-    );
+    addSpoiler(info, "error: failed to call API of AtCoder Problems", req.statusText);
     return [];
   }
   return JSON.parse(req.responseText);
 }
 
-function lookupAtCoderProblem(
-  url: URL,
-  info: HTMLUListElement
-): { [key: string]: string } {
+function lookupAtCoderProblem(url: URL, info: HTMLUListElement): { [key: string]: string } {
   const match = /\/+contests\/+(\w+)\/+tasks\/+(\w+)/.exec(url.pathname);
   if (!match) {
     addSpoiler(info, "error: failed to parse URL", "");
     return {};
   }
   const problemId = match[2];
-  const problems = loadAtCoderProblemsAPI(
-    "https://kenkoooo.com/atcoder/resources/merged-problems.json",
-    info
-  );
+  const problems = loadAtCoderProblemsAPI("https://kenkoooo.com/atcoder/resources/merged-problems.json", info);
   for (const problem of problems) {
     if (problem["id"] == problemId) {
       return problem;
     }
   }
-  addSpoiler(
-    info,
-    "error: problem info is not found in AtCoder Problems",
-    problemId
-  );
+  addSpoiler(info, "error: problem info is not found in AtCoder Problems", problemId);
   return {};
 }
 
-function lookupAtCoderContest(
-  contestId: string,
-  info: HTMLUListElement
-): { [key: string]: string } {
-  const contests = loadAtCoderProblemsAPI(
-    "https://kenkoooo.com/atcoder/resources/contests.json",
-    info
-  );
+function lookupAtCoderContest(contestId: string, info: HTMLUListElement): { [key: string]: string } {
+  const contests = loadAtCoderProblemsAPI("https://kenkoooo.com/atcoder/resources/contests.json", info);
   for (const contest of contests) {
     if (contest["id"] == contestId) {
       return contest;
     }
   }
-  addSpoiler(
-    info,
-    "error: contest info is not found in AtCoder Problems",
-    contestId
-  );
+  addSpoiler(info, "error: contest info is not found in AtCoder Problems", contestId);
   return {};
 }
 
